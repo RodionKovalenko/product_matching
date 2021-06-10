@@ -12,14 +12,14 @@ import pandas as pd
 # In[2]:
 
 
-comp = pd.read_csv("./Productnames/competition_products.csv")
+comp = pd.read_csv("data/Productnames/competition_products.csv")
 
 
 # In[3]:
 
 
 # Überschrift 4-6 nicht erkennbar und nicht relevant
-basis = pd.read_csv("./Productnames/store_products.csv",names=["id","product", "Store", "NAN", "NAN2","NAN3"])
+basis = pd.read_csv("data/Productnames/store_products.csv",names=["id","product", "Store", "NAN", "NAN2","NAN3"])
 basis = basis[['id','product','Store']]
 
 
