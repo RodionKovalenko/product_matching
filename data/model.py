@@ -13,10 +13,10 @@ from sentence_transformers import SentenceTransformer, InputExample, losses
 from torch.utils.data import DataLoader
 
 #Define the model. Either from scratch of by loading a pre-trained model
-model = SentenceTransformer('distiluse-base-multilingual-cased')
+model = SentenceTransformer('distilbert-base-nli-mean-tokens')
 
 #Define your train examples. You need more than just two examples...
-train_examples = [InputExample(texts=[sample_200.productname_1, sample_200.productname_2], label=sample_200.match.values)]
+train_examples = [InputExample(texts=[sample_200.productname_1.values, sample_200.productname_2.values], label=sample_200.match.values)]
 
 #Define your train dataset, the dataloader and the train loss
 train_dataloader = DataLoader(train_examples, shuffle=True, batch_size=16)
