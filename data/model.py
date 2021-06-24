@@ -1,7 +1,8 @@
 from sentence_transformers import util,SentenceTransformer
 from sentence_transformers import evaluation
-model = SentenceTransformer('distiluse-base-multilingual-cased')
- 
+#model = SentenceTransformer('distiluse-base-multilingual-cased')
+
+model = SentenceTransformer('sbert_trained_model')
 import pandas as pd
 
 
