@@ -1,10 +1,11 @@
 from sentence_transformers import util,SentenceTransformer
 from sentence_transformers import evaluation
+from sentence_transformers import SentenceTransformer, InputExample, losses
+from torch.utils.data import DataLoader
 #model = SentenceTransformer('distiluse-base-multilingual-cased')
+#model = SentenceTransformer('distilbert-base-nli-mean-tokens')
 
-model = SentenceTransformer('sbert_trained_model')
 import pandas as pd
-
 
 df= pd.read_csv("./product_matching.csv")
 sample=df.sample(n=50000, random_state=1)
@@ -15,17 +16,14 @@ sample_200=df.sample(n=200, random_state=1)
 #evaluation sample
 sample_evaluation = df.sample(n=50, random_state=1)
 
-
-from sentence_transformers import SentenceTransformer, InputExample, losses
-from torch.utils.data import DataLoader
-
 #Define the model. Either from scratch of by loading a pre-trained model
-model = SentenceTransformer('distilbert-base-nli-mean-tokens')
 
+model = SentenceTransformer('data/sbert_trained_model/')
+
+#transfer labels in float, otherwise it will not accepted
 labels = []
 for i in sample_200.match.values:
-    labels.append(float(i))
-    
+    labels.append(float(i))    
     
 # evaluation labels    
 labels_evaluation = []
@@ -41,15 +39,14 @@ for sample_index, row in sample_200.iterrows():
 train_dataloader = DataLoader(train_examples, shuffle=True, batch_size=16)
 train_loss = losses.CosineSimilarityLoss(model)
 
-
 evaluator = evaluation.EmbeddingSimilarityEvaluator(sample_evaluation.productname_1.values, 
                                                     sample_evaluation.productname_2.values, 
                                                     labels_evaluation)
 
-#Tune the model
+#Tune the modelgit
 model.fit(train_objectives=[(train_dataloader, train_loss)],
           epochs=1,
           warmup_steps=100,
           evaluator=evaluator, 
           evaluation_steps=1,
-          output_path='sbert_trained_model')
+          output_path='data/sbert_trained_model')
