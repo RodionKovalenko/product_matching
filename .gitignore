@@ -1,2 +1,2 @@
 /src/webservice/__pycache__/*
-data/sbert_trained_model/
+/data/sbert_trained_model/
