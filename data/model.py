@@ -16,6 +16,8 @@ sample_200=df.sample(n=200, random_state=1)
 #evaluation sample
 sample_evaluation = df.sample(n=50, random_state=1)
 
+print(sample_200)
+
 #Define the model. Either from scratch of by loading a pre-trained model
 
 model = SentenceTransformer('data/sbert_trained_model/')
@@ -45,8 +47,8 @@ evaluator = evaluation.EmbeddingSimilarityEvaluator(sample_evaluation.productnam
 
 #Tune the modelgit
 model.fit(train_objectives=[(train_dataloader, train_loss)],
-          epochs=1,
+          epochs=100,
           warmup_steps=100,
           evaluator=evaluator, 
-          evaluation_steps=1,
+          evaluation_steps=50,
           output_path='data/sbert_trained_model')

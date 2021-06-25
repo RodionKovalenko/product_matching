@@ -14,7 +14,8 @@ class Sbert(Resource):
 
     def calculate_match(self, sentences):
         # https://www.sbert.net/
-        model = SentenceTransformer('paraphrase-MiniLM-L12-v2')
+        # model = SentenceTransformer('distilbert-base-nli-mean-tokens')
+        model = SentenceTransformer('data/sbert_trained_model')
 
         # Compute embeddings
         embeddings = model.encode(sentences, convert_to_tensor=True)
