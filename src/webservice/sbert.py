@@ -10,8 +10,6 @@ saved_model_dir = current_abs_path + '/' + saved_model_path
 
 # model = SentenceTransformer('distilbert-base-nli-mean-tokens')
 model = SentenceTransformer(saved_model_dir)
-out = nn.Linear(in_features = model.get_sentence_embedding_dimension(), out_features = 1)
-sigmoid = nn.Sigmoid()
  
 class Sbert(Resource):
 
@@ -28,14 +26,9 @@ class Sbert(Resource):
         # embeddings = model.encode(sentences, convert_to_tensor=True)
         embeddings = model.encode(sentences, convert_to_tensor=True)
 
-        output = sigmoid(out(embeddings))
-
-        print(output)
-
         # Compute cosine-similarities for each sentence with each other sentence
         cosine_scores = util.pytorch_cos_sim(embeddings, embeddings)
 
-        # Find the pairs with the highest cosine similarity scores
         pairs = []
         for i in range(len(cosine_scores) - 1):
             for j in range(i+1, len(cosine_scores)):
