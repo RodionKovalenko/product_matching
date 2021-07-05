@@ -64,7 +64,7 @@ train_loss = losses.SoftmaxLoss(model, sentence_embedding_dimension=model.get_se
 
 #Tune the model
 model.fit(train_objectives=[(train_dataloader, train_loss)],
-          epochs=1,
+          epochs=10,
           warmup_steps=100,
           evaluation_steps=13,
           output_path=saved_model_path)
