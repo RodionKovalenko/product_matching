@@ -10,7 +10,7 @@ import pandas as pd
 
 df= pd.read_csv("./product_matching.csv")
 
-sample = df
+sample = df.sample(n=5000, random_state=1)
 #70 percent of all data for training set
 sample_training = sample.sample(frac=0.7, random_state=1)
 #30 percent of all data for evaluation data set
