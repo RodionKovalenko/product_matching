@@ -10,7 +10,7 @@ import pandas as pd
 
 df= pd.read_csv("./product_matching.csv")
 
-sample = df.sample(n=5000, random_state=1)
+sample = df.sample(n=500, random_state=1)
 #70 percent of all data for training set
 sample_training = sample.sample(frac=0.7, random_state=1)
 #30 percent of all data for evaluation data set
@@ -72,7 +72,7 @@ train_dataloader = DataLoader(train_examples, shuffle=True, batch_size=16)
 train_loss = losses.CosineSimilarityLoss(model)
 evaluator = evaluation.EmbeddingSimilarityEvaluator(sample_evaluation.productname_1.values, sample_evaluation.productname_2.values, sample_evaluation.match.values)
 
-num_epochs = 4
+num_epochs = 1
 #10% of train data for warm-up
 warmup_steps = math.ceil(len(sample_training) * num_epochs * 0.1) 
 
