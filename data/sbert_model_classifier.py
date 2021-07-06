@@ -10,19 +10,15 @@ from torch.utils.data import DataLoader
 import pandas as pd
 
 df= pd.read_csv("./product_matching.csv")
-sample=df.sample(n=50000, random_state=1)
-
+sample = df.sample(n=50000, random_state=1)
 #training sample
-sample_200=df.sample(n=200, random_state=1)
-
+sample_training = df.sample(n=200, random_state=1)
 #evaluation sample
 sample_evaluation = df.sample(n=50, random_state=1)
-
 #Define the model. Either from scratch of by loading a pre-trained model
 
 # word_embedding_model = SentenceTransformer('data/sbert_trained_model/')
-
-saved_model_path = 'data/sbert_trained_model'
+saved_model_path = 'data/sbert_trained_model_classifier'
 word_embedding_model = models.Transformer('sentence-transformers/distilbert-base-nli-mean-tokens')
 
 #pooling model 
@@ -33,7 +29,7 @@ print(pooling_model.get_sentence_embedding_dimension())
 dense_model = models.Dense(pooling_model.get_sentence_embedding_dimension(), out_features=2,  activation_function=nn.Softmax())
 
 model = SentenceTransformer(modules=[word_embedding_model, pooling_model, dense_model])
-train_num_labels = len(sample_200)
+train_num_labels = len(sample_training)
 
 import pathlib
 current_abs_path = str(pathlib.Path().resolve())
@@ -46,16 +42,15 @@ if os.path.isdir(saved_model_dir):
 else:
     print('model was not saved')
 
-
-print(sample_200)
+print(sample_training)
 #transfer labels in float, otherwise it will not accepted
 labels = []
-for i in sample_200.match.values:
+for i in sample_training.match.values:
     labels.append(str(int(i)))   
 
 #Define your train examples. You need more than just two examples...
 train_examples = []
-for sample_index, row in sample_200.iterrows():
+for sample_index, row in sample_training.iterrows():
     train_examples.append(InputExample(texts=[row.productname_1, row.productname_2], label=int(row.match)))
 
 #Define your train dataset, the dataloader and the train loss
@@ -64,14 +59,14 @@ train_loss = losses.SoftmaxLoss(model, sentence_embedding_dimension=model.get_se
 
 #Tune the model
 model.fit(train_objectives=[(train_dataloader, train_loss)],
-          epochs=1,
+          epochs=10,
           warmup_steps=100,
           evaluation_steps=13,
           output_path=saved_model_path)
 
 
 #evaluate model first on trained data set
-for sample_index, row in sample_200[0:10].iterrows():
+for sample_index, row in sample_training[0:10].iterrows():
     embeddings = model.encode([row.productname_1, row.productname_2])
     print(embeddings)
     print(row.match)

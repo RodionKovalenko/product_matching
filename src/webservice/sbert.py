@@ -5,7 +5,7 @@ from sentence_transformers import SentenceTransformer, CrossEncoder, util, model
 
 import pathlib
 current_abs_path = str(pathlib.Path().resolve())
-saved_model_path = 'data/sbert_trained_model'
+saved_model_path = 'data/sbert_trained_model_sim_score'
 saved_model_dir = current_abs_path + '/' + saved_model_path
 
 # model = SentenceTransformer('distilbert-base-nli-mean-tokens')
@@ -27,7 +27,7 @@ class Sbert(Resource):
         embeddings = model.encode(sentences, convert_to_tensor=True)
 
         # Compute cosine-similarities for each sentence with each other sentence
-        cosine_scores = util.pytorch_cos_sim(embeddings, embeddings)
+        cosine_scores = util.pytorch_cos_sim(embeddings[0], embeddings[1])
 
         pairs = []
         for i in range(len(cosine_scores) - 1):
@@ -35,11 +35,10 @@ class Sbert(Resource):
                 pairs.append({'index': [i, j], 'score': cosine_scores[i][j]})
 
         # # Sort scores in decreasing order
-        # pairs = sorted(pairs, key=lambda x: x['score'], reverse=True)
-        matching_score = {}
+        pairs = sorted(pairs, key=lambda x: x['score'], reverse=True)
+        matching_score = {}    
 
-        for pair in pairs[0:1]:
-            i, j = pair['index']
-            matching_score = "Matching score: {:.4f}".format(pair['score'])
+        for i in range(len(cosine_scores)):
+            matching_score = "Score: {:.4f}".format(cosine_scores[i][i])
 
         return matching_score
