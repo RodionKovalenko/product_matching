@@ -9,13 +9,14 @@ from torch.utils.data import DataLoader
 import pandas as pd
 
 df= pd.read_csv("./product_matching.csv")
-sample = df.sample(n=50000, random_state=1)
-#training sample
-sample_training = df.sample(n=200, random_state=1)
-#evaluation sample
-sample_evaluation = df.sample(n=50, random_state=1)
-#Define the model. Either from scratch of by loading a pre-trained model
 
+sample = df
+#70 percent of all data for training set
+sample_training = sample.sample(frac=0.7, random_state=1)
+#30 percent of all data for evaluation data set
+sample_evaluation = sample.drop(sample_training.index)
+
+#Define the model. Either from scratch of by loading a pre-trained model
 # word_embedding_model = SentenceTransformer('data/sbert_trained_model/')
 saved_model_path = 'data/sbert_trained_model_sim_score'
 #bert model to create sentence representations
@@ -29,7 +30,6 @@ pooling_model = models.Pooling(word_embedding_model.get_word_embedding_dimension
 
 #sbert model
 model = SentenceTransformer(modules=[word_embedding_model, pooling_model])
-
 
 # retrieve the existing model or pull the defined if not exists
 import pathlib
@@ -70,11 +70,11 @@ for sample_index, row in sample_evaluation.iterrows():
 #Define your train dataset, the dataloader and the train loss
 train_dataloader = DataLoader(train_examples, shuffle=True, batch_size=16)
 train_loss = losses.CosineSimilarityLoss(model)
-
 evaluator = evaluation.EmbeddingSimilarityEvaluator(sample_evaluation.productname_1.values, sample_evaluation.productname_2.values, sample_evaluation.match.values)
 
-num_epochs = 1
-warmup_steps = math.ceil(len(sample_training) * num_epochs * 0.1) #10% of train data for warm-up
+num_epochs = 4
+#10% of train data for warm-up
+warmup_steps = math.ceil(len(sample_training) * num_epochs * 0.1) 
 
 #Tune the model
 model.fit(train_objectives=[(train_dataloader, train_loss)],
@@ -84,6 +84,8 @@ model.fit(train_objectives=[(train_dataloader, train_loss)],
           evaluation_steps=500,         
           output_path=saved_model_path)
 
+
+print("EVALUATION FIRST 10 training records")
 #evaluate model first on trained data set
 for sample_index, row in sample_training[0:10].iterrows():
     embeddings = model.encode([row.productname_1, row.productname_2])
@@ -93,6 +95,7 @@ for sample_index, row in sample_training[0:10].iterrows():
     print(row.match)
     print()
 
+print("EVALUATION FIRST 10 evalation records")
 #evaluate model first on evaluation data set
 for sample_index, row in sample_evaluation[0:10].iterrows():
     embeddings = model.encode([row.productname_1, row.productname_2])
