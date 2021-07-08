@@ -12,7 +12,7 @@ WORKDIR /product_matching_app/
 COPY . /product_matching_app/
 
 #install dependencies specified in requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt && python data/sbert_model_sim_score.py
+RUN pip install --no-cache-dir -r requirements.txt
 #train the sbert model
 #run hello world in cmd 
 
