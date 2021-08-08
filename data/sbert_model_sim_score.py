@@ -20,7 +20,7 @@ sample_evaluation = sample.drop(sample_training.index)
 # word_embedding_model = SentenceTransformer('data/sbert_trained_model/')
 saved_model_path = 'data/sbert_trained_model_sim_score'
 #bert model to create sentence representations
-word_embedding_model = models.Transformer('sentence-transformers/distilbert-base-nli-mean-tokens')
+word_embedding_model = models.Transformer('sentence-transformers/distiluse-base-multilingual-cased-v2')
 
 # Apply mean pooling to get one fixed sized sentence vector
 pooling_model = models.Pooling(word_embedding_model.get_word_embedding_dimension(),
